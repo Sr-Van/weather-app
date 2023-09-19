@@ -1,9 +1,22 @@
 const tempToday = document.querySelector('.temperature-today')
 
+const dayInfos = document.querySelectorAll('.today-infos div')
+const dayInfosTitle = document.querySelector('.day')
+
 const weekWeatherCards = document.querySelector('.week-weather')
 
 const imageTemperature = document.querySelector('[data-img="img"]')
 
+
+const showTodayInfo = (obj) => {
+    dayInfos.forEach((day, index) => {
+        const paragraph = day.children[1]
+
+        if(paragraph) {
+            paragraph.textContent = obj[index]
+        }
+    })
+}
 
 
 const showData = ({daily}) => {
@@ -12,12 +25,22 @@ const showData = ({daily}) => {
 
     const todayMediumTemp = Math.trunc((todayTempMax + todayTempMin) / 2)
 
-    const todayShower = daily.showers_sum[4]
-    
+    const todayShower = daily.showers_sum[0]
+    todayAparence = daily.apparent_temperature_max[0]
+    todaySunrise = daily.sunrise[0].slice(11)
+    todaySunset = daily.sunset[0].slice(11)
+
     console.log(daily);
-    tempToday.innerHTML = todayMediumTemp
+    tempToday.innerHTML = `${todayMediumTemp}°`
 
     cardDaySelected(todayShower)
+    showTodayInfo({
+        1: todaySunrise,
+        2: todaySunset,
+        3: todayAparence,
+        4: todayTempMax,
+        5: todayTempMin
+    })
 }
 
 const getWeather = async (position) => {
@@ -43,12 +66,16 @@ const semana = {
     7: "Sabado",
 }
 
+dayInfosTitle.textContent = `${semana[diaDaSemana]}`
+
 const cardDaySelected = todayShower => {
     const divToSelect = weekWeatherCards.children[diaDaSemana - 1]
     colorBackgroundDiv = ""
     colorTextDiv = ""
 
-    if(todayShower == 0) {
+    
+
+    if(todayShower <= 1) {
         colorBackgroundDiv = "#ffe963"
         imageTemperature.innerHTML = `<img src="/images/sun clouds.png">`
     }
@@ -63,7 +90,7 @@ const cardDaySelected = todayShower => {
     }
 
     divToSelect.style.backgroundColor = colorBackgroundDiv
-    divToSelect.classList.add('highlight')
+    divToSelect.children[0].innerHTML = `<i class="fa-regular fa-calendar-check"></i>`
 
 }
 
